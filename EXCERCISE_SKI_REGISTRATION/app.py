@@ -18,7 +18,6 @@ db.init_app(app)
 
 # TODO: Stwórz model Form (formularz rejestracji na wyjazd narciarski)
 
-
 class Form(db.Model):
     __tablename__ = "forms"
 
@@ -76,7 +75,7 @@ def index():
     print(all)
 
     # Tymczasowo - pusta lista
-    forms = []
+    forms = all
 
     return render_template("index.html", forms=forms)
 
@@ -86,16 +85,19 @@ def formularz_detail(form_id):
     """Strona szczegółów pojedynczego formularza"""
     # TODO: Pobierz formularz o podanym ID
 
+    f = Form.query.get(form_id)
+
+
     # Tymczasowo - przykładowy obiekt
     form = {
         "id": form_id,
-        "imie": "Jan",
-        "nazwisko": "Kowalski",
-        "email": "jan@example.com",
-        "telefon": "123456789",
-        "poziom_narciarski": "średniozaawansowany",
-        "uwagi": "Brak",
-        "data_rejestracji": "2024-01-11",
+        "imie": f.imie,
+        "nazwisko": f.nazwisko,
+        "email": f.email,
+        "telefon": f.telefon,
+        "poziom_narciarski": f.poziom_narciarski,
+        "uwagi": f.uwagi,
+        "data_rejestracji": f.data_rejestracji.isoformat(),
     }
 
     return render_template("detail.html", form=form)
@@ -139,6 +141,10 @@ def nowy_formularz():
 def usun_formularz(form_id):
     """Usuwanie formularza"""
     # TODO: Znajdź formularz i usuń go
+
+    form = Form.query.get(form_id)
+    db.session.delete(form)
+    db.session.commit()
 
     flash("Formularz został usunięty!", "success")
     return redirect(url_for("index"))
